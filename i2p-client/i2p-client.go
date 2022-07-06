@@ -4,16 +4,34 @@
 // 	UseBridges 1
 // 	Bridge i2p i2pbase32addressesarefiftytwocharacterslongenoughok.b32.i2p
 // 	ClientTransportPlugin i2p exec i2p-client
-//
-// Because this transport doesn't do anything to the traffic, you can use the
-// ORPort of any ordinary bridge (or relay that has DirPort set) in the bridge
-// line; it doesn't have to declare support for the i2p transport.
+
+// Like the server transport, this pluggable transport outsources the task
+// of transforming Tor traffic to I2P instead of performing the transformation
+// itself. As such, it requires there to be an I2P router on the machine which
+// uses it, although that router may operate in Hidden Mode further enhancing
+// it's resistance to enumeration by not routing traffic for others and not
+// participating in the global routing table of I2P routers(The NetDB). It is
+// recommended that people in sensitive or restricted locations use Java I2P
+// so that hidden mode is enabled automatically based on their location.
+
+// Also like the server transport, the primary goals of this transport are
+// enumeration resistance and obfuscation while your Tor traffic reaches a
+// bridge using I2P. As such, it is optimized for performance while accomplishing
+// these goals. It uses 1-2 hops over an I2P tunnel pool to obfuscate traffic and
+// make it impossible for the bridge to know the location of the client.
+
+// -- STOP for page generation -- //
+
+// see also /i2p-server/i2p-server.go
+
 package main
 
 import (
 	"io"
 	"io/ioutil"
 	"net"
+
+	//"net"
 	"os"
 	"os/signal"
 	"sync"
@@ -46,7 +64,8 @@ func copyLoop(a, b net.Conn) {
 
 func handler(conn *pt.SocksConn) error {
 	defer conn.Close()
-	remote, err := net.Dial("tcp", conn.Req.Target)
+	//remote, err := net.Dial("tcp", conn.Req.Target)
+	remote, err := session.Dial("tcp", conn.Req.Target)
 	if err != nil {
 		conn.Reject()
 		return err

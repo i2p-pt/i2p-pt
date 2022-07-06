@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>I2P Pluggable Transport</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {  background-color: #f8f8f8; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ef2929; } /* Alert */
+    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #c4a000; } /* Attribute */
+    code span.bn { color: #0000cf; } /* BaseN */
+    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4e9a06; } /* Char */
+    code span.cn { color: #000000; } /* Constant */
+    code span.co { color: #8f5902; font-style: italic; } /* Comment */
+    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+    code span.dt { color: #204a87; } /* DataType */
+    code span.dv { color: #0000cf; } /* DecVal */
+    code span.er { color: #a40000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #0000cf; } /* Float */
+    code span.fu { color: #000000; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+    code span.ot { color: #8f5902; } /* Other */
+    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+    code span.sc { color: #000000; } /* SpecialChar */
+    code span.ss { color: #4e9a06; } /* SpecialString */
+    code span.st { color: #4e9a06; } /* String */
+    code span.va { color: #000000; } /* Variable */
+    code span.vs { color: #4e9a06; } /* VerbatimString */
+    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">I2P Pluggable Transport</h1>
+</header>
+<h1 id="i2p-pluggable-transport---streaming-version">I2P Pluggable Transport - Streaming Version</h1>
+<p>This is an I2P-based Pluggable Transport for Tor which conceals the location of an unlisted Tor relay(A “Bridge”) and it’s client(presumably TBB) from eachother and from most network observers.</p>
+<ul>
+<li><p><em><strong>Quick Start</strong> for testers and new users</em></p></li>
+<li><p>On the <em>Client-side</em>:</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu"># Usage (in torrc):</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>UseBridges 1</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>Bridge i2p i2pbase32addressesarefiftytwocharacterslongenoughok.b32.i2p</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>ClientTransportPlugin i2p exec i2p-client</span></code></pre></div>
+<ul>
+<li>On the <em>Relay-side</em>:</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu"># Usage (in torrc):</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>BridgeRelay 1</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>ORPort 9001</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>ExtORPort 7689</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>ServerTransportPlugin i2p exec i2p-server</span></code></pre></div>
+<h2 id="why-is-this-useful">Why is this useful?</h2>
+<p>I2P and Tor are both different anonymizing technologies, and some might think that one is objectively superior to the other in the end. I do not believe this to be the case, I think that I2P and Tor have different advantages and disadvantages and that the differences between the projects in practice have to do with the differences between the goals of the developers. If that’s the case, then it pays to think of the networks in terms of their advantages and disadvantages and consider where they might complement eachother. In particular, I2P has some advantages that it could offer Tor in situations where those advantages are useful.</p>
+<h3 id="among-i2ps-advantages-salient-to-this-point">Among I2P’s advantages salient to this point</h3>
+<ol type="1">
+<li>I2P routers can be bootstrapped from any known-good router in the network by sharing the “RouterInfo” of the known-good router. This allows us to resist being blocked by sharing the information required to connect by side-channels or even offline(sneakernet) if need be. Friends who trust eachother can connect to I2P and get to know I2P routers in other countries without depending on the presence of bootstrap servers or network consensus.</li>
+<li>I2P has extremely high relay diversity compared to Tor. Since every participant in who can safely do so is a relay by default, we have between 60-90 thousand relays in the network at any given estimate. Each I2P router knows a subset of these relays, usually between 1500 and 2000, which they use to build their tunnels through. I2P routers are constantly evaluating the quality of these tunnels in order to make sure that they are fast and to watch out for potentially colluding routers that might be conducting attacks. This means that well-integrated I2P routers will only maintain connections to reliable, fast peers who are not blocked by the regional authority.</li>
+<li>I2P is capable of onion-routing(Our variant is called garlic routing because we sometimes bundle messages and pool tunnels, which has a metaphorical clove-like structure) without Tor’s help, and is a hidden service network in it’s own right.As such, it can be used to transport Tor traffic from one Tor client, over I2P, to a Tor relay, through the Tor network, and out a Tor exit just like any other type of network connection, but without revealing the IP address of the client to the bridge and without revealing the IP address of the bridge to the client. It also conceals the connection from non-colluding network observers who can’t conduct a sybil attack. In other words, it makes it very challenging to enumerate Tor bridges by requesting them from many addresses/identities to discover and block their location.</li>
+</ol>
+<h3 id="on-the-other-hand-tors-advantages-are">On the other hand, Tor’s advantages are</h3>
+<ol type="1">
+<li>Tor has far greater, and far better vetted exit diversity than I2P does. At the time of this writing, I2P is only recently gained a fleet of exit nodes(which we call outproxies) which are willing to proxy traffic to the clear web. More importantly, we have never made any outproxy or pool of outproxies official, we’ve never offered legal support to an outproxy operator. Tor’s much better at that stuff than us so far and probably will be for a while, frankly it’s not our raison d`etre.</li>
+<li>Tor allows the use of pluggable transports to connect to a relay in it’s network without revealing the content or destination of communication over that connection to the operator of that relay. This protects the user of the service from an operator logging the most specific information about their usage and protects the operator from being coerced by violence or intimidation into logging specific information, it’s simply materially impossible for them to do so.</li>
+<li>Tor has a browser bundle. I2P is, at best, a beneficiary of the Tor Browser Bundle’s work in terms of browser privacy and security. How to best mix I2P and Tor in the same browser is, to my mind, not a straightforward question in spite of the solutions on the market today. For example:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="fu">#### An incomplete overview of problems with mixed I2P/Tor Browsers</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="ss">- </span>I2P Outproxies that forward <span class="in">`.onion`</span> traffic to Tor</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="ss"> 1. </span>The outproxy can always see what <span class="in">`.onion`</span> sites you are visiting.</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ss"> 2. </span>It can almost always see the content on you&#39;re requestsing.</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="ss"> 3. </span>It does not do anything to address <span class="in">`.onion`</span> sites requesting <span class="in">`.i2p`</span> resources and vice-versa.</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="ss">- </span>Mixing I2P and Tor with a local proxy(the &quot;Privoxy&quot; method):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="ss"> 1. </span>Difficult or impossible to prevent <span class="in">`.onion`</span> sites from requesting <span class="in">`.i2p`</span> resources and vice-versa(Mixed-network determination, anonymity set reduction)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="ss"> 2. </span>Very challenging user-facing implementation</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="ss">- </span>Mixing I2P and Tor with a proxy.pac file:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a><span class="ss"> 1. </span>Poor browser support and getting poorer</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a><span class="ss"> 2. </span>Difficult or impossible to prevent <span class="in">`.onion`</span> sites from requesting <span class="in">`.i2p`</span> resources and vice-versa</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a><span class="ss">- </span>Mixing I2P and Tor with Browser Extensions and Container Tabs:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a><span class="ss"> 1. </span>Relies on non-universal browser features(Container tabs)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a><span class="ss"> 2. </span>Relies on a bunch of software wherein I am the only author(poor peer review)</span></code></pre></div>
+<h2 id="a-new-way-to-connect-to-tor">A new way to connect to Tor</h2>
+<p>All Pluggable Transports are ways of connecting to Tor as long as someone is willing to provide you a bridge, but this one is the first to use an existing P2P, onion-routed, obfuscated network to carry traffic to a Tor bridge using the Pluggable Transport technology. This should use enable Tor to:</p>
+<ul>
+<li>Avoid bridge enumeration</li>
+<li>Resist blocking</li>
+<li>Obfuscate first-hop traffic</li>
+</ul>
+<h2 id="a-better-way-forward-for-mixed-i2ptor-browsing">A better way forward for mixed I2P/Tor Browsing</h2>
+<p>While outproxies will probably always have a place in some threat models, the use of Tor-over-I2P offers user-facing advantages which I think are worthwhile for I2P users. This PT Client can be combined with Tor and zzz’s <a href="http://zzz.i2p/topics/3219">SOCKS outproxy plugin</a> and it will:</p>
+<ul>
+<li>Route Tor traffic through I2P on it’s way to a bridge, preventing Tor traffic from leaving the local device unaltered and resisting enumeration. This solves the problem of outproxies being able to observe <code>.onion</code> traffic.</li>
+</ul>
+<p>Combined with a Tor Browser which has been configured for I2P using browser extensions to intelligently separate applications it can also:</p>
+<ul>
+<li>Prevent traffic and information in use in <code>.onion</code>, clearnet-over-Tor-over-I2P, and <code>.i2p</code> from leaking information across network and browser-enforced boundaries.</li>
+</ul>
+</body>
+</html>

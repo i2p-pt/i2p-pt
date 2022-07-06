@@ -36,6 +36,8 @@
 // to create this have since been merged into github.com/eyedeekay/sam3,
 // which is a library which allows developers to use I2P as a network
 // transport for all their application development needs.
+
+// -- STOP for page generation -- //
 package main
 
 import (
