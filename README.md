@@ -1,4 +1,4 @@
-I2P Pluggable Transport - Streaming Version
+[I2P Pluggable Transport - Streaming Version](/)
 ===========================================
 
 This is an I2P-based Pluggable Transport for Tor which conceals the
